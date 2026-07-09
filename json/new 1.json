@@ -1,0 +1,30 @@
+{
+    "searchBean": {
+        "searchProperties": {
+            "Filtrar porlistFolha.data": {
+                "separator": {
+                    "name": "Filtrar por",
+                    "hide": true
+                },
+                "property": "listFolha.data",
+                "key": "listFolha.data",
+                "searchRestrictionType": "DATE",
+                "condition": {
+                    "value": "IGUAL",
+                    "desc": "Igual"
+                },
+                "params": {
+                    "defaultValueCompare": "2026-06-01",
+                    "nestedName": "listFolha",
+                    "defaultValue": "2026-06-01"
+                },
+                "value": "2026-06-01",
+                "valueCompare": "2026-06-01"
+            }
+        }
+    },
+    "pagination": {
+        "page": 1,
+        "paginate": true
+    }
+}
