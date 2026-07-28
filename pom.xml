@@ -57,9 +57,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
+			<artifactId>poi-ooxml</artifactId>
 			<version>5.5.1</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.opencsv</groupId>

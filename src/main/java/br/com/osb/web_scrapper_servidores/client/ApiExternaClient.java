@@ -25,7 +25,7 @@ public class ApiExternaClient {
         this.mapper = mapper;
     }
 
-    public ApiResponseDTO consultarApiExterna(ApiRequestDTO request) {
+    public ApiResponseDTO consultarApiExterna(String url, ApiRequestDTO request) {
         Map<String, Object> body = mapper.toApiRequest(request);
 
         HttpHeaders headers = new HttpHeaders();
@@ -34,7 +34,7 @@ public class ApiExternaClient {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         ResponseEntity<ApiResponseDTO> response = restTemplate.exchange(
-            "https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/servidores/listAll?exercicio=158",
+            url,
             HttpMethod.POST,
             entity,
             ApiResponseDTO.class
@@ -45,3 +45,17 @@ public class ApiExternaClient {
     }
 
 }
+
+/*
+URLs que precisam ser consultadas:
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/efetivos/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/comissionados/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/celetistas/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/aposentados/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/pensionistas/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/estagiarios/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/cedidosRecebidos/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/temporarios/listAll?exercicio=158
+https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal/agentePolitico/listAll?exercicio=158
+
+*/
