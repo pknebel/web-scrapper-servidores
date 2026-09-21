@@ -3,47 +3,66 @@ package br.com.osb.web_scrapper_servidores.service;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import br.com.osb.web_scrapper_servidores.client.ApiExternaClient;
+import br.com.osb.web_scrapper_servidores.config.ApiExternaProperties;
 import br.com.osb.web_scrapper_servidores.dto.request.ApiRequestDTO;
 import br.com.osb.web_scrapper_servidores.dto.response.BuscaDadosResponseDTO;
 import br.com.osb.web_scrapper_servidores.dto.response.TotaisResponseDTO;
 
+/**
+ * Consulta as categorias de um único mês.
+ *
+ * <p>Esta é a operação reutilizável de "consultar um período": recebe a data de referência via
+ * {@link ApiRequestDTO} e dispara as 10 categorias em paralelo. A consulta anual
+ * ({@link BuscaAnualService}) apenas invoca este serviço uma vez por mês completo, sem duplicar a
+ * lógica de montagem da requisição nem de paralelismo.</p>
+ */
 @Service
 public class BuscaDadosService {
 
+    private static final Logger log = LoggerFactory.getLogger(BuscaDadosService.class);
+
+    private static final String SERVIDORES = "servidores";
+    private static final String EFETIVOS = "efetivos";
+    private static final String COMISSIONADOS = "comissionados";
+    private static final String CELETISTAS = "celetistas";
+    private static final String APOSENTADOS = "aposentados";
+    private static final String PENSIONISTAS = "pensionistas";
+    private static final String ESTAGIARIOS = "estagiarios";
+    private static final String CEDIDOS_RECEBIDOS = "cedidosRecebidos";
+    private static final String TEMPORARIOS = "temporarios";
+    private static final String AGENTE_POLITICO = "agentePolitico";
+
     private final ApiExternaClient client;
     private final Executor executor;
+    private final ApiExternaProperties propriedades;
 
-    public BuscaDadosService(ApiExternaClient client, Executor executor) {
+    public BuscaDadosService(ApiExternaClient client,
+                             Executor executor,
+                             ApiExternaProperties propriedades) {
         this.client = client;
         this.executor = executor;
+        this.propriedades = propriedades;
     }
 
-    private CompletableFuture<TotaisResponseDTO> consultarAsync(String url, ApiRequestDTO request) {
+    private CompletableFuture<TotaisResponseDTO> consultarAsync(String categoria, ApiRequestDTO request) {
+        String url = propriedades.urlDaCategoria(categoria, request.data().getYear());
+
         return CompletableFuture.supplyAsync(
             () -> client.consultarApiExterna(url, request).totais(),
             executor
         );
     }
 
-    private static final String baseUrl = "https://transparencia.e-publica.net/epublica-portal/rest/chapeco/gestaoDePessoal";
-
-    private static final String SERVIDORES = baseUrl + "/servidores/listAll?exercicio=158";
-    private static final String EFEITIVOS = baseUrl + "/efetivos/listAll?exercicio=158";
-    private static final String COMISSIONADOS = baseUrl + "/comissionados/listAll?exercicio=158";
-    private static final String CELETISTAS = baseUrl + "/celetistas/listAll?exercicio=158";
-    private static final String APOSENTADOS = baseUrl + "/aposentados/listAll?exercicio=158";
-    private static final String PENSIONISTAS = baseUrl + "/pensionistas/listAll?exercicio=158";
-    private static final String ESTAGIARIOS = baseUrl + "/estagiarios/listAll?exercicio=158";
-    private static final String CEDIDOS_RECEBIDOS = baseUrl + "/cedidosRecebidos/listAll?exercicio=158";
-    private static final String TEMPORARIOS = baseUrl + "/temporarios/listAll?exercicio=158";
-    private static final String AGENTE_POLITICO = baseUrl + "/agentePolitico/listAll?exercicio=158";
-
     public BuscaDadosResponseDTO consultar(ApiRequestDTO request) {
+        log.debug("Consultando as categorias da data de referência {}.", request.data());
+
         CompletableFuture<TotaisResponseDTO> servidores = consultarAsync(SERVIDORES, request);
-        CompletableFuture<TotaisResponseDTO> efetivos = consultarAsync(EFEITIVOS, request);
+        CompletableFuture<TotaisResponseDTO> efetivos = consultarAsync(EFETIVOS, request);
         CompletableFuture<TotaisResponseDTO> comissionados = consultarAsync(COMISSIONADOS, request);
         CompletableFuture<TotaisResponseDTO> celetistas = consultarAsync(CELETISTAS, request);
         CompletableFuture<TotaisResponseDTO> aposentados = consultarAsync(APOSENTADOS, request);
@@ -79,5 +98,4 @@ public class BuscaDadosService {
             agentePolitico.join()
         );
     }
-
 }

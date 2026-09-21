@@ -1,0 +1,17 @@
+# Blueprint do Render. Com este arquivo no repositorio voce pode criar o servico
+# em "New > Blueprint" em vez de preencher o formulario na mao.
+services:
+  - type: web
+    name: web-scrapper-servidores-api
+    runtime: docker
+    plan: free
+    region: oregon          # troque para "frankfurt" ou "singapore" se precisar
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      # URL do frontend publicado (ex.: https://seu-front.vercel.app).
+      # sync: false = o valor e preenchido por voce no painel, nao fica no git.
+      - key: APP_CORS_ORIGEM
+        sync: false
+      - key: TZ
+        value: America/Sao_Paulo
